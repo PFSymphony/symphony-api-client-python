@@ -16,7 +16,7 @@ class DataFeedClient(APIClient):
         self.botClient = botClient
         self.config = self.botClient.getSymConfig()
         if self.config.data['proxyURL']:
-            self.proxies = {"http": self.config.data['proxyURL']}
+            self.proxies = {"https": 'https://' + self.config.data['proxyURL'] + ':' + str(self.config.data['proxyPort'])}
         else:
             self.proxies = {}
 
@@ -47,7 +47,7 @@ class DataFeedClient(APIClient):
         datafeedevents = []
         headers = {'sessionToken': self.botClient.getSymAuth().getSessionToken(), 'keyManagerToken':self.botClient.getSymAuth().getKeyManagerToken()}
         url = self.config.data['agentHost']+'/agent/v4/datafeed/{0}/read'.format(id)
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, proxies=self.proxies, headers=headers)
         if (response.status_code == 204):
             datafeedevents = []
         elif(response.status_code == 200):
